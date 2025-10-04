@@ -1,0 +1,33 @@
+[
+    {
+        "name": "drive_to_store",
+        "preconditions": {
+            "car_fueled": true
+        },
+        "effects": {
+            "location": "store",
+            "car_fueled": false
+        },
+        "script": "print('Driving to the store...')"
+    },
+    {
+        "name": "go_home",
+        "preconditions": {
+            "location": "store"
+        },
+        "effects": {
+            "location": "home"
+        },
+        "script": "print('Going home...')"
+    },
+    {
+        "name": "buy_car",
+        "preconditions": {
+            "has_money": true
+        },
+        "effects": {
+            "has_car": true
+        },
+        "script": "print('Buying a new car...')"
+    }
+]

@@ -17,7 +17,11 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dependencies = []
+dependencies = [
+    "apache-airflow",
+    "pendulum",
+    "networkx",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/bharathra/actee"

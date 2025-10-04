@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 import json
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Any
 from action import Action
 
 
@@ -67,7 +67,7 @@ class ActionManager:
             print("No existing actions file found or file is empty. Starting with an empty library.")
             self.actions = {}
 
-    def get_actions_by_effect(self, effect_key: str, effect_value: any) -> List[Action]:
+    def get_actions_by_effect(self, effect_key: str, effect_value: Any) -> List[Action]:
         """
         Retrieves a list of actions that have a given effect.
         """
