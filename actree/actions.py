@@ -2,7 +2,34 @@
 
 import json
 from typing import Dict, Optional, List, Any
-from action import Action
+
+
+class Action:
+    def __init__(self, name: str, preconditions: dict, effects: dict, script: str):
+        self.name = name
+        self.preconditions = preconditions
+        self.effects = effects
+        self.script = script
+
+    def __repr__(self) -> str:
+        return f"Action(name='{self.name}', preconditions={self.preconditions}, effects={self.effects})"
+
+    def to_dict(self) -> dict:
+        return {
+            "name": self.name,
+            "preconditions": self.preconditions,
+            "effects": self.effects,
+            "script": self.script
+        }
+
+    @staticmethod
+    def from_dict(data: dict) -> 'Action':
+        return Action(
+            name=data["name"],
+            preconditions=data["preconditions"],
+            effects=data["effects"],
+            script=data["script"]
+        )
 
 
 class ActionManager:
@@ -74,25 +101,3 @@ class ActionManager:
         effect_str = str((effect_key, effect_value))
         action_names = self.effect_index.get(effect_str, [])
         return [self.actions[name] for name in action_names]
-
-
-# Example Usage
-if __name__ == "__main__":
-    # Initialize the manager
-    manager = ActionManager("actions.json")
-    # Create some sample actions
-    drive_to_store_script = "print('Driving to the store...')"
-    manager.create_action("drive_to_store", {"car_fueled": True}, {"location": "store", "car_fueled": False}, drive_to_store_script)
-    go_home_script = "print('Going home...')"
-    manager.create_action("go_home", {"location": "store"}, {"location": "home"}, go_home_script)
-    buy_car_script = "print('Buying a new car...')"
-    manager.create_action("buy_car", {"has_money": True}, {"has_car": True}, buy_car_script)
-    # Save the actions
-    manager.save_actions()
-
-    # Now, let's get actions that result in being at the 'store'
-    store_actions = manager.get_actions_by_effect("location", "store")
-    print(f"\nActions that result in being at the store: {store_actions}")
-    # Let's get actions that result in having a 'car'
-    has_car_actions = manager.get_actions_by_effect("has_car", True)
-    print(f"\nActions that result in having a car: {has_car_actions}")

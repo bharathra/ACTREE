@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from actree.action import Action
+from actree.actions import Action
 
 name = 'actree'
 __version__ = '1.3.5'
