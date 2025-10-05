@@ -1,22 +1,32 @@
 [
     {
+        "name": "eat_food",
+        "preconditions": {
+            "hungry": true,
+            "location": "store"
+        },
+        "effects": {
+            "hungry": false
+        },
+        "script": "print('Eating food...')"
+    },
+    {
         "name": "drive_to_store",
         "preconditions": {
             "car_fueled": true
         },
         "effects": {
-            "location": "store",
-            "car_fueled": false
+            "location": "store"
         },
         "script": "print('Driving to the store...')"
     },
     {
-        "name": "go_home",
+        "name": "fill_gas",
         "preconditions": {
-            "location": "store"
+            "has_car": true
         },
         "effects": {
-            "location": "home"
+            "car_fueled": true
         },
         "script": "print('Going home...')"
     },
@@ -29,5 +39,15 @@
             "has_car": true
         },
         "script": "print('Buying a new car...')"
+    },
+    {
+        "name": "drive_to_home",
+        "preconditions": {
+            "car_fueled": true
+        },
+        "effects": {
+            "location": "home"
+        },
+        "script": "print('Driving back to home...')"
     }
 ]

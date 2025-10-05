@@ -1,12 +1,13 @@
 #! /usr/bin/env python3
 
-from actree.actions import Action
+from actree.action import Action, ActionManager
 
 name = 'actree'
-__version__ = '1.3.5'
+__version__ = '0.0.1'
+
 __all__ = [
-    'Action',
-    'ActionManager',
-    'name'
+    'name',
     '__version__',
+    'Action',
+    'ActionManager'
 ]
