@@ -3,12 +3,13 @@
         "name": "eat_food",
         "preconditions": {
             "hungry": true,
-            "location": "store"
+            "location": "store",
+            "has_money": true
         },
         "effects": {
             "hungry": false
         },
-        "script": "print('Eating food...')"
+        "script": "STATE['money'] -= 5\nmon=STATE['money']\nprint(f'Eating food; Available money: {mon}')"
     },
     {
         "name": "drive_to_store",
@@ -18,27 +19,7 @@
         "effects": {
             "location": "store"
         },
-        "script": "print('Driving to the store...')"
-    },
-    {
-        "name": "fill_gas",
-        "preconditions": {
-            "has_car": true
-        },
-        "effects": {
-            "car_fueled": true
-        },
-        "script": "print('Going home...')"
-    },
-    {
-        "name": "buy_car",
-        "preconditions": {
-            "has_money": true
-        },
-        "effects": {
-            "has_car": true
-        },
-        "script": "print('Buying a new car...')"
+        "script": "print(f'Driving to the store...')"
     },
     {
         "name": "drive_to_home",
@@ -48,6 +29,27 @@
         "effects": {
             "location": "home"
         },
-        "script": "print('Driving back to home...')"
+        "script": "print(f'Driving back to home...')"
+    },
+    {
+        "name": "fill_gas",
+        "preconditions": {
+            "has_car": true,
+            "has_money": true
+        },
+        "effects": {
+            "car_fueled": true
+        },
+        "script": "STATE['money'] -= 100\nmon=STATE['money']\nprint(f'Filling gas; Available money: {mon}')"
+    },
+    {
+        "name": "buy_car",
+        "preconditions": {
+            "has_money": true
+        },
+        "effects": {
+            "has_car": true
+        },
+        "script": "STATE['money']-= 10000\nmon=STATE['money']\nprint(f'Buying a new car; Available money: {mon}')"
     }
 ]
