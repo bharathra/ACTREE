@@ -6,10 +6,10 @@ from agent import Agent
 
 # Example Usage
 if __name__ == "__main__":
-    money = 20000
-    # Initialize the manager
+    money = 11000
+    # Initialize
     axn_map = ActionLib("actions.json")
-    # Create some sample actions
+    # sample actions
     axn_map.create_action("eat_food",
                           {"hungry": True, "location": "store", "has_money": money >= 5},
                           {"hungry": False},
@@ -43,10 +43,6 @@ if __name__ == "__main__":
     # Save the actions
     axn_map.save_actions()
 
-    # Getting actions by desired effect
-    # store_actions = axn_map.get_actions_by_effect("location", "store")
-    # print(f"\nActions that result in requested effect: {store_actions}")
-
     agent = Agent()
     initial_state = {
         "has_money": money > 0,
@@ -61,19 +57,8 @@ if __name__ == "__main__":
         "location": "home"
     }
 
-    # Let's get a graph for a plan
+    # plan
     my_graph = agent.plan(axn_map.actions, initial_state, goal)
-
-    # print graph
-    if my_graph is None:
-        print("No plan found.")
-    else:
-        print(f"Dependencies: {my_graph.edges}")
-        print(f"Plan: {my_graph.nodes}")
-
+    print(my_graph)
     # execute
-    if my_graph is not None:
-        agent.execute_dag_locally(my_graph, initial_state)
-
-    # Generate and register the DAG with Airflow
-    # dag = agent.create_dynamic_dag(my_graph, 'dinner_plan_1')
+    agent.execute_linearly(my_graph, initial_state)

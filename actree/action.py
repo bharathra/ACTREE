@@ -2,14 +2,18 @@
 
 
 class Action:
-    def __init__(self, name: str, preconditions: dict, effects: dict, script: str):
+    def __init__(self, name: str, 
+                 preconditions: dict, 
+                 effects: dict, 
+                 script: str):
+        
         self.name = name
         self.preconditions = preconditions
         self.effects = effects
         self.script = script
 
     def __repr__(self) -> str:
-        return f"Action(name='{self.name}', preconditions={self.preconditions}, effects={self.effects})"
+        return f"{self.name}"
 
     def to_dict(self) -> dict:
         return {
@@ -27,4 +31,3 @@ class Action:
             effects=data["effects"],
             script=data["script"]
         )
-

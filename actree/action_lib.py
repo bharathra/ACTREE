@@ -6,6 +6,7 @@ from action import Action
 
 
 class ActionLib:
+
     def __init__(self, storage_file: str):
         self.storage_file = storage_file
         self.actions: Dict[str, Action] = {}
@@ -24,7 +25,11 @@ class ActionLib:
                     self.effect_index[effect_str] = []
                 self.effect_index[effect_str].append(action_name)
 
-    def create_action(self, name: str, preconditions: dict, effects: dict, script: str) -> Action:
+    def create_action(self,
+                      name: str,
+                      preconditions: dict,
+                      effects: dict,
+                      script: str) -> Action:
         """Creates a new Action and adds it to the library, then updates the index."""
         if name in self.actions:
             pass
@@ -67,7 +72,9 @@ class ActionLib:
             print("No existing actions file found or file is empty. Starting with an empty library.")
             self.actions = {}
 
-    def get_actions_by_effect(self, effect_key: str, effect_value: Any) -> List[Action]:
+    def get_actions_by_effect(self, 
+                              effect_key: str, 
+                              effect_value: Any) -> List[Action]:
         """
         Retrieves a list of actions that have a given effect.
         """
