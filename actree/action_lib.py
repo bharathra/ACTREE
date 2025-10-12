@@ -2,12 +2,15 @@
 
 import json
 from typing import Dict, Optional, List, Any
+
 from action import Action
 
 
 class ActionLib:
+    """Manages a library of Actions, allowing for creation, retrieval, deletion,"""
 
-    def __init__(self, storage_file: str):
+    def __init__(self, 
+                 storage_file: str):
         self.storage_file = storage_file
         self.actions: Dict[str, Action] = {}
         self.effect_index: Dict[str, List[str]] = {}
@@ -53,7 +56,7 @@ class ActionLib:
 
     def save_actions(self):
         """Saves the current actions to the storage file."""
-        with open(self.storage_file, 'w') as f:
+        with open(self.storage_file, 'w', encoding='utf-8') as f:
             action_dicts = [action.to_dict() for action in self.actions.values()]
             json.dump(action_dicts, f, indent=4)
         print(f"Successfully saved {len(self.actions)} actions to {self.storage_file}")
@@ -61,7 +64,7 @@ class ActionLib:
     def load_actions(self):
         """Loads actions from the storage file."""
         try:
-            with open(self.storage_file, 'r') as f:
+            with open(self.storage_file, 'r', encoding='utf-8') as f:
                 action_dicts = json.load(f)
                 self.actions = {
                     action_data["name"]: Action.from_dict(action_data)
@@ -72,8 +75,8 @@ class ActionLib:
             print("No existing actions file found or file is empty. Starting with an empty library.")
             self.actions = {}
 
-    def get_actions_by_effect(self, 
-                              effect_key: str, 
+    def get_actions_by_effect(self,
+                              effect_key: str,
                               effect_value: Any) -> List[Action]:
         """
         Retrieves a list of actions that have a given effect.

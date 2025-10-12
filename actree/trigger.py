@@ -1,6 +1,7 @@
-import requests
 import json
 from typing import Dict, Any, Optional
+
+import requests
 
 # --- Configuration (Must be updated for your environment) ---
 AIRFLOW_HOST = "http://localhost:8080"
@@ -26,7 +27,7 @@ def trigger_airflow_dag(dag_id: str, run_config: Dict[str, Any]) -> Optional[req
     }
 
     try:
-        response = requests.post(url, headers=AUTH_HEADERS, data=json.dumps(payload))
+        response = requests.post(url, headers=AUTH_HEADERS, data=json.dumps(payload), timeout=10)
         response.raise_for_status()
         return response
     except requests.exceptions.RequestException as e:

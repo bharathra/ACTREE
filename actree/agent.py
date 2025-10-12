@@ -2,7 +2,7 @@
 
 import operator
 from collections import deque
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 from action import Action
 
@@ -20,6 +20,11 @@ OP_MAP = {
 
 
 class Agent:
+    """
+    The Agent class is responsible for planning and executing actions.
+    It uses a simple forward-chaining planner to find a sequence of actions
+    that can achieve a given goal state from an initial state.
+    """
 
     def _is_goal_met(self,
                      current_state: Dict[str, Any],
@@ -35,7 +40,8 @@ class Agent:
         new_state.update(action.effects)
         return new_state
 
-    def _get_hashable_state(self, state: Dict[str, Any]) -> tuple:
+    def _get_hashable_state(self,
+                            state: Dict[str, Any]) -> tuple:
         """Converts a state dict to a hashable tuple for the visited set."""
         # Only include keys from the goal in the hash to keep the state space small
         # and focused (local state principle).
@@ -57,7 +63,7 @@ class Agent:
                 if current_value != required_condition:
                     return False
                 continue
-            #
+                #
             # Check for relational states
             op_str, required_value = required_condition
             op_func = OP_MAP.get(op_str)
@@ -67,31 +73,25 @@ class Agent:
             elif current_value is None:
                 # Cannot check condition if the state key does not exist
                 return False
-            #
+                #
         return True
 
-    def _simulate_success(self, current_state: Dict[str, Any], action: 'Action', goal: Dict[str, Any]) -> Dict[str, Any]:
+    def _simulate_success(self,
+                          current_state: Dict[str, Any],
+                          action: Action) -> Dict[str, Any]:
         """
-        IMPLEMENTATION OF ASSUME SUCCESS: 
         Simulates the action achieving the part of the goal it affects.
-        Assumed Action Effect format: {'goal_key': 'ASSUME_ACHIEVED'}
         """
         new_state = current_state.copy()
         #
         for effect_key, effect_value in action.effects.items():
-            # If the action's effect is a variable/goal-directed, we assume it achieves the goal target.
-            if effect_value == 'ASSUME_ACHIEVED':
-                # The new state's value for this key becomes the goal's value.
-                if effect_key in goal:
-                    new_state[effect_key] = goal[effect_key]
-                # If the action has a non-variable effect, apply it normally
-            else:
-                new_state[effect_key] = effect_value
+            new_state[effect_key] = effect_value
             #
         return new_state
 
     # The main planner function
-    def plan(self, actions: Dict[str, Action],
+    def plan(self,
+             actions: Dict[str, Action],
              initial_state: Dict[str, Any],
              goal: Dict[str, Any]) -> List[Action]:
         """
@@ -119,11 +119,11 @@ class Agent:
                 break  # BFS guarantees the shortest path, so we stop
                 #
             # 2. Try All Available Actions
-            for action_name, action in actions.items():
+            for action in actions.values():
                 # Use relational check
                 if self._check_preconditions(current_state, action):
                     # Assume Success State Transition
-                    new_state = self._simulate_success(current_state, action, goal)
+                    new_state = self._simulate_success(current_state, action)
                     new_state_hash = self._get_hashable_state(new_state)
                     #
                     if new_state_hash not in visited:
@@ -133,34 +133,33 @@ class Agent:
             #
         return final_linear_plan
 
-    def execute_action_script(self, action_script: str, current_state: Dict[str, Any]) -> Dict[str, Any]:
+    def execute_linearly(self,
+                         actions: List[Action],
+                         current_state: Optional[Dict[str, Any]]=None) -> None:
         """
-        Executes the action script in a defined scope, allowing it to access and modify the state.
+        Executes a list of actions sequentially.
         Args:
-            action_script: The Python code string to execute.
-            current_state: The dictionary representing the system state.
-        Returns:
-            The modified system state dictionary.
+            actions: A list of actions to execute.
+            current_state: The initial state of the system.
         """
-        # 1. Define the local scope for the script
-        # Pass the state in as a local variable named 'STATE'
-        # The script must use 'STATE' to access and modify the system state.
-        local_scope = {'STATE': current_state}
-        # 2. Execute the script
-        # Pass an empty dictionary for globals and our local_scope for locals.
-        exec(action_script, {}, local_scope)
-        # 3. Return the modified state dictionary
-        return local_scope['STATE']
 
-    def execute_linearly(self, actions: List[Action], current_state: Dict[str, Any] = {}):
         if not actions:
             print("No actions to execute.")
             return
+            #
+        if current_state is None:
+            current_state = {}
             #
         # Execute actions
         print("Valid execution order found. Running tasks sequentially:")
         for action in actions:
             if not action:
                 continue
+            # 1. Define the local scope for the script
+            # Pass the state in as a local variable named 'STATE'
+            # The script must use 'STATE' to access and modify the system state.
+            local_scope = {'STATE': current_state}
+            # 2. Execute the script
+            # Pass an empty dictionary for globals and our local_scope for locals.
             # print(f"  [RUN] Executing: {action_name}")
-            self.execute_action_script(action.script, current_state)
+            exec(action.script, {}, local_scope)

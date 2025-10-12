@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
-from actree import name, __version__ as version
+from actree import __NAME__, __VERSION__
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name=name,
-    version=version,
+    name=__NAME__,
+    version=__VERSION__,
     packages=find_packages(),
     test_suite='tests',
     url='https://github.com/bharathra/actee',

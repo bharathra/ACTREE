@@ -1,14 +1,16 @@
 #! /usr/bin/env python3
 
-from actree.action import Action
-from actree.action_lib import ActionLib
+from action import Action
+from action_lib import ActionLib
+from agent import Agent
 
-name = 'actree'
-__version__ = '0.0.1'
+__NAME__ = 'actree'
+__VERSION__ = '0.0.1'
 
 __all__ = [
-    'name',
-    '__version__',
+    '__NAME__',
+    '__VERSION__',
     'Action',
-    'ActionLib'
+    'ActionLib',
+    'Agent',
 ]

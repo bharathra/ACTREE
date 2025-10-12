@@ -4,7 +4,10 @@
         "preconditions": {
             "hungry": true,
             "location": "store",
-            "has_money": true
+            "money": [
+                ">=",
+                5
+            ]
         },
         "effects": {
             "hungry": false
@@ -35,7 +38,10 @@
         "name": "fill_gas",
         "preconditions": {
             "has_car": true,
-            "has_money": true
+            "money": [
+                ">=",
+                100
+            ]
         },
         "effects": {
             "car_fueled": true
@@ -45,7 +51,10 @@
     {
         "name": "buy_car",
         "preconditions": {
-            "has_money": true
+            "money": [
+                ">=",
+                10000
+            ]
         },
         "effects": {
             "has_car": true

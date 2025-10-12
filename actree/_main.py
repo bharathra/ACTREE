@@ -6,12 +6,11 @@ from agent import Agent
 
 # Example Usage
 if __name__ == "__main__":
-    money = 11000
     # Initialize
     axn_map = ActionLib("actions.json")
     # sample actions
     axn_map.create_action("eat_food",
-                          {"hungry": True, "location": "store", "has_money": money >= 5},
+                          {"hungry": True, "location": "store", "money": (">=", 5)},
                           {"hungry": False},
                           "STATE['money'] -= 5\n" \
                           "mon=STATE['money']\n" \
@@ -28,14 +27,14 @@ if __name__ == "__main__":
                           "print(f'Driving back to home...')")
 
     axn_map.create_action("fill_gas",
-                          {"has_car": True, "has_money": money >= 100},
+                          {"has_car": True, "money": (">=", 100)},
                           {"car_fueled": True},
                           "STATE['money'] -= 100\n" \
                           "mon=STATE['money']\n" \
                           "print(f'Filling gas; Available money: {mon}')")
 
     axn_map.create_action("buy_car",
-                          {"has_money": money >= 10000},
+                          {"money": (">=", 10000)},
                           {"has_car": True},
                           "STATE['money']-= 10000\n" \
                           "mon=STATE['money']\n" \
@@ -45,12 +44,11 @@ if __name__ == "__main__":
 
     agent = Agent()
     initial_state = {
-        "has_money": money > 0,
         "hungry": True,
         "location": "home",
         "car_fueled": False,
         "has_car": False,
-        "money": money
+        "money": 11_000
     }
     goal = {
         "hungry": False,
