@@ -9,7 +9,7 @@ from action import Action
 class ActionLib:
     """Manages a library of Actions, allowing for creation, retrieval, deletion,"""
 
-    def __init__(self, 
+    def __init__(self,
                  storage_file: str):
         self.storage_file = storage_file
         self.actions: Dict[str, Action] = {}
@@ -42,11 +42,13 @@ class ActionLib:
         self._build_effect_index()  # Rebuild the index after a new action is added
         return new_action
 
-    def get_action(self, name: str) -> Optional[Action]:
+    def get_action(self,
+                   name: str) -> Optional[Action]:
         """Retrieves an action by its name."""
         return self.actions.get(name)
 
-    def delete_action(self, name: str) -> bool:
+    def delete_action(self,
+                      name: str) -> bool:
         """Deletes an action from the library and updates the index."""
         if name in self.actions:
             del self.actions[name]
@@ -57,9 +59,10 @@ class ActionLib:
     def save_actions(self):
         """Saves the current actions to the storage file."""
         with open(self.storage_file, 'w', encoding='utf-8') as f:
-            action_dicts = [action.to_dict() for action in self.actions.values()]
+            action_dicts = [action.to_dict()
+                            for action in self.actions.values()]
             json.dump(action_dicts, f, indent=4)
-        print(f"Successfully saved {len(self.actions)} actions to {self.storage_file}")
+        print(f"Saved {len(self.actions)} actions to {self.storage_file}")
 
     def load_actions(self):
         """Loads actions from the storage file."""
@@ -70,9 +73,10 @@ class ActionLib:
                     action_data["name"]: Action.from_dict(action_data)
                     for action_data in action_dicts
                 }
-            print(f"Successfully loaded {len(self.actions)} actions from {self.storage_file}")
+            print(f"Loaded {len(self.actions)} actions from {self.storage_file}")
+            #
         except (FileNotFoundError, json.JSONDecodeError):
-            print("No existing actions file found or file is empty. Starting with an empty library.")
+            print("Actions library not found. Creating one...")
             self.actions = {}
 
     def get_actions_by_effect(self,

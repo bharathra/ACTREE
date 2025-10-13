@@ -13,17 +13,20 @@ from action import Action
 
 
 class AirFlowInterface:
+    """Interface to create and manage Airflow DAGs based on action plans.
+    """
 
-    def _build_dependency_graph(self, plan: List[Action]) -> nx.DiGraph:
+    def _build_dependency_graph(self,
+                                plan: List[Action]) -> nx.DiGraph:
         """
         Converts the linear sequence into a DAG by finding dependencies.
         (This logic is based on our previous discussion.)
         """
-        G = nx.DiGraph()
+        dg = nx.DiGraph()
 
         for action in plan:
             # Use the action name as the node ID
-            G.add_node(action.name, action_obj=action)
+            dg.add_node(action.name, action_obj=action)
 
         for i, current_action in enumerate(plan):
             # Check for dependencies with all preceding actions
@@ -32,32 +35,33 @@ class AirFlowInterface:
 
                 # A dependency exists if a precondition of the current action
                 # is satisfied by an effect of a preceding action.
-                for pre_key, pre_val in current_action.preconditions.items():
+                for pre_key, _ in current_action.preconditions.items():
                     if pre_key in preceding_action.effects:
                         # If a key is in the effects, it means the state was changed,
                         # thus establishing a dependency.
-                        G.add_edge(preceding_action.name, current_action.name)
+                        dg.add_edge(preceding_action.name, current_action.name)
                         break  # Only need one dependency to link the actions
 
-        return G
+        return dg
 
-    def create_dynamic_dag(self, final_linear_plan: List[Action], dag_id_suffix: str) -> DAG:
+    def create_dynamic_dag(self,
+                           final_linear_plan: List[Action],
+                           dag_id_suffix: str) -> DAG:
         """
         Creates an Airflow DAG from a NetworkX graph, including a failure/replan task.
         """
-        dag_id = f'action_graph_plan_{dag_id_suffix}'
 
-        # 3. Convert Linear Plan to Parallel DAG (Dependency Analysis)
+        # Convert Linear Plan to Parallel DAG (Dependency Analysis)
         graph_plan = self._build_dependency_graph(final_linear_plan)
 
-        with DAG(
-            dag_id=dag_id,
-            start_date=pendulum.datetime(2025, 9, 6, tz="UTC"),
-            schedule=None,
-            catchup=False,
-            tags=['action_graph', 'dynamic'],
-            default_args={'owner': 'airflow'}
-        ) as dag:
+        with DAG(dag_id=f"action_graph_plan_{dag_id_suffix}",
+                 start_date=pendulum.datetime(2025, 9, 6, tz="UTC"),
+                 schedule=None,
+                 catchup=False,
+                 tags=["action_graph", "dynamic"],
+                 default_args={"owner": "airflow"}
+                 ) as dag:
+
             tasks = {}
 
             # 1. Create a PythonOperator for each planned action
@@ -65,7 +69,7 @@ class AirFlowInterface:
                 tasks[node_name] = PythonOperator(
                     task_id=node_name,
                     python_callable=self.execute_action_script,
-                    op_kwargs={'action_name': node_name},
+                    op_kwargs={"action_name": node_name},
                 )
 
             # 2. Set the dependencies based on the graph's edges
@@ -76,7 +80,7 @@ class AirFlowInterface:
 
             # This task is called to initiate the next planning cycle if anything fails.
             replan_task = PythonOperator(
-                task_id='REPLAN_FLOW_TRIGGER',
+                task_id="REPLAN_FLOW_TRIGGER",
                 python_callable=self.trigger_replan_loop,
                 # THIS IS THE CRITICAL LINE: It runs only if ONE task fails.
                 trigger_rule=TriggerRule.ONE_FAILED,
@@ -99,36 +103,36 @@ class AirFlowInterface:
         This function is executed by Airflow when an action fails.
         It should call your external trigger system to kick off a new planning loop.
         """
-        ti = kwargs['ti']
-        dag_run_id = kwargs['dag_run'].run_id
+        # ti = kwargs["ti"]
+        dag_run_id = kwargs["dag_run"].run_id
 
         # In a real system, this function would:
         # 1. Find the failed task using ti.get_direct_upstream_failed_task_instances()
         # 2. Extract the current system state (via XComs or a database).
         # 3. Call your external agent/API to start the planning process again with the new state.
 
-        print(f"!!! REPLANNING TRIGGERED !!!")
+        print("!!! REPLANNING TRIGGERED !!!")
         print(f"DAG Run {dag_run_id} failed. Calling agent loop to re-plan...")
 
         # We would place the Airflow API trigger call here to start a NEW, smaller DAG.
         # For simplicity, we'll just print.
         # trigger_external_agent_api(failed_task_info, current_state)
-        pass
 
     # Assuming a dedicated key for the entire system state, e.g., 'system_state'
-    def execute_action_script(self, action_name: str, **context) -> Dict[str, Any]:
+    def execute_action_script(self, **context) -> Dict[str, Any]:
         """
         Pulls the state, executes the action, and pushes the modified state.
         """
-        ti = context['ti']
+        ti = context["ti"]
         # 1. PULL STATE: Retrieve the most recent state pushed by an upstream task
         # Note: XComs are usually retrieved from a specific upstream task,
         # but for simplicity, we assume the latest 'system_state' is correct.
-        current_state: Dict[str, Any] = ti.xcom_pull(task_ids=None, key='system_state')
+        current_state: Dict[str, Any] = ti.xcom_pull(task_ids=None, 
+                                                     key="system_state")
 
         if not current_state:
             # Load initial state if this is the first task
-            current_state = context['dag_run'].conf.get('initial_state', {})
+            current_state = context["dag_run"].conf.get("initial_state", {})
             print("[SETUP] Loaded initial state from DAG config.")
 
         # 2. EXECUTE AND OBSERVE: (Your LLM-generated script logic runs here)
@@ -137,7 +141,8 @@ class AirFlowInterface:
 
         # --- SIMULATION OF EXECUTION AND VARIABLE EFFECT ---
         # Assume the action execution returns the observed changes
-        observed_effects = {"fuel": current_state.get('fuel', 0) + 2, "item_count": 1}
+        observed_effects = {"fuel": current_state.get("fuel", 0) + 2,
+                            "item_count": 1}
         # ----------------------------------------------------
 
         # 3. APPLY EFFECTS AND PUSH NEW STATE
@@ -146,7 +151,7 @@ class AirFlowInterface:
         # The return value of a Python callable is automatically pushed to XCom
         # with the key 'return_value'. We will explicitly push the whole state
         # with a standard key for downstream tasks to find easily.
-        ti.xcom_push(key='system_state', value=current_state)
+        ti.xcom_push(key="system_state", value=current_state)
 
         print(f"[OBSERVED] State updated. New fuel level: {current_state['fuel']}")
         return current_state  # Also push as return_value for convenience

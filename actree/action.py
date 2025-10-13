@@ -6,7 +6,8 @@ class Action:
     Represents an action that can be performed by the agent.
     """
 
-    def __init__(self, name: str,
+    def __init__(self, 
+                 name: str,
                  preconditions: dict,
                  effects: dict,
                  script: str):

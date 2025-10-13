@@ -135,7 +135,7 @@ class Agent:
 
     def execute_linearly(self,
                          actions: List[Action],
-                         current_state: Optional[Dict[str, Any]]=None) -> None:
+                         current_state: Optional[Dict[str, Any]] = None) -> None:
         """
         Executes a list of actions sequentially.
         Args:

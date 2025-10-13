@@ -15,7 +15,8 @@ AUTH_HEADERS = {
 }
 
 
-def trigger_airflow_dag(dag_id: str, run_config: Dict[str, Any]) -> Optional[requests.Response]:
+def trigger_airflow_dag(dag_id: str, 
+                        run_config: Dict[str, Any]) -> Optional[requests.Response]:
     """
     Triggers an Airflow DAG run using the REST API.
     """
@@ -27,7 +28,8 @@ def trigger_airflow_dag(dag_id: str, run_config: Dict[str, Any]) -> Optional[req
     }
 
     try:
-        response = requests.post(url, headers=AUTH_HEADERS, data=json.dumps(payload), timeout=10)
+        response = requests.post(
+            url, headers=AUTH_HEADERS, data=json.dumps(payload), timeout=10)
         response.raise_for_status()
         return response
     except requests.exceptions.RequestException as e:
