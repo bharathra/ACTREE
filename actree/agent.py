@@ -55,17 +55,23 @@ class Agent:
         Assumed Action Precondition format: {'state_key': ('operator', value)}
         Example: {'fuel': ('>=', 5)}
         """
-        for state_key, required_condition in action.preconditions.items():
+        for state_key, required_value in action.preconditions.items():
             current_value = current_state.get(state_key)
+            # print(f"Checking precondition for '{state_key}': {required_value}")
             #
             # Check for binary states (no relation, just key=value)
-            if not isinstance(required_condition, tuple):
-                if current_value != required_condition:
+            if not isinstance(required_value, tuple):
+                if current_value != required_value:
                     return False
                 continue
                 #
             # Check for relational states
-            op_str, required_value = required_condition
+            op_str, required_value = required_value
+            # If the values start with '#', then they are refering to another state key
+            if isinstance(required_value, str) and \
+                    required_value[0] == '#':
+                required_value = current_state.get(required_value[1:])
+                #
             op_func = OP_MAP.get(op_str)
             if op_func and current_value is not None:
                 if not op_func(current_value, required_value):
@@ -95,13 +101,15 @@ class Agent:
              initial_state: Dict[str, Any],
              goal: Dict[str, Any]) -> List[Action]:
         """
-        Finds the shortest action sequence using BFS and converts it to a parallel DAG.
+        Finds the shortest action sequence using BFS and 
+        converts it to a parallel DAG.
         Args:
             actions: Dictionary of all available actions (ActionManager.actions).
             initial_state: The starting state of the local problem.
             goal: The desired goal state.
         Returns:
-            A NetworkX DiGraph representing the parallel plan, or None if no plan is found.
+            A NetworkX DiGraph representing the parallel plan, 
+            or None if no plan is found.
         """
         # BFS Initialization
         # Queue stores (current_state, path_of_actions)
@@ -142,7 +150,6 @@ class Agent:
             actions: A list of actions to execute.
             current_state: The initial state of the system.
         """
-
         if not actions:
             print("No actions to execute.")
             return

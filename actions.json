@@ -37,7 +37,10 @@
     {
         "name": "fill_gas",
         "preconditions": {
-            "has_car": true,
+            "has_car": [
+                "==",
+                "#test"
+            ],
             "money": [
                 ">=",
                 100

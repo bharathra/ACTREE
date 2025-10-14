@@ -10,7 +10,9 @@ if __name__ == "__main__":
     axn_map = ActionLib("actions.json")
     # sample actions
     axn_map.create_action("eat_food",
-                          {"hungry": True, "location": "store", "money": (">=", 5)},
+                          {"hungry": True, 
+                           "location": "store", 
+                           "money": (">=", 5)},
                           {"hungry": False},
                           "STATE['money'] -= 5\n" \
                           "mon=STATE['money']\n" \
@@ -27,7 +29,8 @@ if __name__ == "__main__":
                           "print(f'Driving back to home...')")
 
     axn_map.create_action("fill_gas",
-                          {"has_car": True, "money": (">=", 100)},
+                          {"has_car": ("==", "#test"), 
+                           "money": (">=", 100)},
                           {"car_fueled": True},
                           "STATE['money'] -= 100\n" \
                           "mon=STATE['money']\n" \
@@ -48,7 +51,8 @@ if __name__ == "__main__":
         "location": "home",
         "car_fueled": False,
         "has_car": False,
-        "money": 11_000
+        "money": 11_000,
+        "test": True
     }
     goal = {
         "hungry": False,

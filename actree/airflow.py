@@ -20,7 +20,6 @@ class AirFlowInterface:
                                 plan: List[Action]) -> nx.DiGraph:
         """
         Converts the linear sequence into a DAG by finding dependencies.
-        (This logic is based on our previous discussion.)
         """
         dg = nx.DiGraph()
 
@@ -101,7 +100,7 @@ class AirFlowInterface:
     def trigger_replan_loop(self, **kwargs):
         """
         This function is executed by Airflow when an action fails.
-        It should call your external trigger system to kick off a new planning loop.
+        It should call the external trigger system to kick off a new planning loop.
         """
         # ti = kwargs["ti"]
         dag_run_id = kwargs["dag_run"].run_id
