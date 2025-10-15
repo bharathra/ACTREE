@@ -61,6 +61,10 @@ class Agent:
             #
             # Check for binary states (no relation, just key=value)
             if not isinstance(required_value, tuple):
+                # If the values start with '#', then they are refering to another state key
+                if isinstance(required_value, str) and \
+                        required_value[0] == '#':
+                    required_value = current_state.get(required_value[1:])
                 if current_value != required_value:
                     return False
                 continue

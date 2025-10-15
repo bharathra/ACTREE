@@ -52,7 +52,8 @@ if __name__ == "__main__":
         "car_fueled": False,
         "has_car": False,
         "money": 11_000,
-        "test": True
+        "test": True,
+        "money1": 11_000
     }
     goal = {
         "hungry": False,
