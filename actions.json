@@ -54,7 +54,10 @@
     {
         "name": "buy_car",
         "preconditions": {
-            "money": "#money1"
+            "money": [
+                ">=",
+                "#money1"
+            ]
         },
         "effects": {
             "has_car": true

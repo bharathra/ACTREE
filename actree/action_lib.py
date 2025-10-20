@@ -36,7 +36,6 @@ class ActionLib:
         """Creates a new Action and adds it to the library, then updates the index."""
         if name in self.actions:
             pass
-
         new_action = Action(name, preconditions, effects, script)
         self.actions[name] = new_action
         self._build_effect_index()  # Rebuild the index after a new action is added

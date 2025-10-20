@@ -37,7 +37,7 @@ if __name__ == "__main__":
                           "print(f'Filling gas; Available money: {mon}')")
 
     axn_map.create_action("buy_car",
-                          {"money": (">=", 10000)},
+                          {"money": (">=", "#money1")},
                           {"has_car": True},
                           "STATE['money']-= 10000\n" \
                           "mon=STATE['money']\n" \
@@ -53,7 +53,7 @@ if __name__ == "__main__":
         "has_car": False,
         "money": 11_000,
         "test": True,
-        "money1": 11_000
+        "money1": 10_000
     }
     goal = {
         "hungry": False,
